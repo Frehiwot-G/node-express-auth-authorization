@@ -83,10 +83,7 @@ const login = async (req, res) => {
 };
 
 const userEvent = function async(req, res) {
-  // res.writeHead(200, {"Content-Type": "application/json"})
-  // return res.end(JSON.stringify({message: "users can acess this page" }))
   return res.status(200).json({ message: "users can acess this page" });
-  // res.status(200).send("users can acess this page");
 };
 
 const adminEvent = async (req, res) => {
