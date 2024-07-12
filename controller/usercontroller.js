@@ -60,34 +60,38 @@ const registerRole = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const user_ = await User.findOne({ email: req.body.email });
-    
-        if (user_) {
-          const validPass = await bcrypt.compare(req.body.password, user_.password);
-          if (!validPass)
-            return res.status(401).send("Email or Password is wrong");
+    const user = await User.findOne({ email: req.body.email });
 
-          // Create and assign token
-          let payload = { id: user_._id, user_role_id: user_.user_role._id };
-          // const token = jwt.sign(payload, config.TOKEN_SECRET);
-          const token = jwt.sign(payload, process.env.JWT_SECRET);
+    if (user) {
+      const validPass = await bcrypt.compare(req.body.password, user.password);
+      if (!validPass) return res.status(401).send("Email or Password is wrong");
 
-          res.status(200).header("auth-token", token).send({ token: token });
-        } else {
-          res.status(401).send("Invalid ");
-        }
+      // Create and assign token
+      const payload = { id: user._id, user_role: user.user_role };
+
+      const token = jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: "5min",
+      });
+
+      return res.status(200).header("auth-token", token).send({ token: token });
+    } else {
+      res.status(401).send("Invalid ");
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const userEvent = async (req, res) => {
-  res.status(200).json({ message: "users can acess this page" });
-}
+const userEvent = function async(req, res) {
+  // res.writeHead(200, {"Content-Type": "application/json"})
+  // return res.end(JSON.stringify({message: "users can acess this page" }))
+  return res.status(200).json({ message: "users can acess this page" });
+  // res.status(200).send("users can acess this page");
+};
 
 const adminEvent = async (req, res) => {
   res.status(200).json({ message: "admins can acess this page" });
-}
+};
 
 module.exports = {
   userEvent,
